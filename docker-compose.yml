@@ -7,6 +7,7 @@ services:
       MYSQL_DATABASE: root
     ports:
       - "3306:3306"
+    env_file: development.env
 
   web:
     build: .
@@ -17,3 +18,4 @@ services:
       - "3000:3000"
     links:
       - db
+    env_file: development.env

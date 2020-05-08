@@ -1,7 +1,21 @@
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the rails db:seed command (or created alongside the database with db:setup).
-#
-# Examples:
-#
-#   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
-#   Character.create(name: 'Luke', movie: movies.first)
+require 'faraday'
+require 'net/http'
+require 'uri'
+require 'json'
+require "active_record"
+require "activerecord-import"
+
+client = Faraday.new(:url => "https://api.gnavi.co.jp/RestSearchAPI/v3/")
+res = client.get("?keyid=#{ENV["KEY_ID"]}&area=AREA110&hit_per_page=100")
+body = JSON.parse(res.body)
+rest = body['rest']
+
+restaurants = rest.map do |rest|
+  Restaurant.new(name: rest['name'], url: rest['url'])
+end
+p restaurants.count
+
+Restaurant.import(restaurants)
+p Restaurant.last
+
+
